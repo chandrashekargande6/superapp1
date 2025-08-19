@@ -120,7 +120,7 @@ def scrape_city(city_slug: str, pages: int = 1, headless: bool = True):
     Scrape restaurant details from Zomato city listing pages.
     """
     driver = get_driver(headless=headless)
-    wait = WebDriverWait(driver, 20)
+    wait = WebDriverWait(driver, 40)
     all_rows = []
     base = "https://www.zomato.com"
 
@@ -171,3 +171,4 @@ if __name__ == "__main__":
     save_to_csv(data, Path("data/zomato_hyderabad_names.csv"))
     for row in data[:10]:
         print(row)
+
