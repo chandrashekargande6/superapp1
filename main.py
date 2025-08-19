@@ -85,7 +85,7 @@ def parse_restaurants_from_html(html):
     """
     Parse all <script type="application/ld+json"> blocks for restaurants.
     """
-    soup = BeautifulSoup(html, "lxml")
+    soup = BeautifulSoup(html, "html.parser") 
     scripts = soup.find_all("script", attrs={"type": "application/ld+json"})
     found = []
 
