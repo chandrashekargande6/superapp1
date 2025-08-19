@@ -166,10 +166,8 @@ def save_to_csv(rows, path: Path):
 
 
 if __name__ == "__main__":
-    # scrape 2 pages of Hyderabad as a test
-    data = scrape_city(city_slug="hyderabad", pages=2, headless=False)
+    # For local testing
+    data = scrape_city(city_slug="hyderabad", pages=2, headless=True)
     save_to_csv(data, Path("data/zomato_hyderabad_names.csv"))
-
-    # Print first few
     for row in data[:10]:
         print(row)
