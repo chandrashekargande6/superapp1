@@ -2,6 +2,7 @@ import csv
 import json
 import random
 import time
+import os
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -10,6 +11,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from flask import Flask, request, jsonify
 
 
 def get_driver(headless=True):
@@ -56,7 +58,6 @@ def extract_from_obj(obj):
                         "reviewCount": item.get("aggregateRating", {}).get("reviewCount")
                             if isinstance(item.get("aggregateRating"), dict)
                             else None,
-                        #"priceRange": item.get("priceRange")
                     })
 
     # Case 2: standalone Restaurant object
@@ -75,7 +76,6 @@ def extract_from_obj(obj):
             "reviewCount": obj.get("aggregateRating", {}).get("reviewCount")
                 if isinstance(obj.get("aggregateRating"), dict)
                 else None,
-            #"priceRange": obj.get("priceRange")
         })
 
     return out
@@ -165,9 +165,16 @@ def save_to_csv(rows, path: Path):
     print(f"Saved {len(rows)} rows → {path.resolve()}")
 
 
-from flask import Flask, request, jsonify
-
+# ---------------- Flask API ----------------
 app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "🚀 Zomato Scraper API is live on Render! Use POST /scrape to fetch data."
+
+@app.route("/ping")
+def ping():
+    return {"status": "ok", "message": "Server is running"}
 
 @app.route("/scrape", methods=["POST"])
 def scrape_endpoint():
@@ -178,6 +185,7 @@ def scrape_endpoint():
     data = scrape_city(city_slug=city, pages=pages, headless=headless)
     return jsonify(data)
 
+
 if __name__ == "__main__":
-    # For local testing only
-    app.run(host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))  # Render uses dynamic port
+    app.run(host="0.0.0.0", port=port)
