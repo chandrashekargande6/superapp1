@@ -165,11 +165,19 @@ def save_to_csv(rows, path: Path):
     print(f"Saved {len(rows)} rows → {path.resolve()}")
 
 
-if __name__ == "__main__":
-    # scrape 2 pages of Hyderabad as a test
-    data = scrape_city(city_slug="hyderabad", pages=2, headless=False)
-    save_to_csv(data, Path("data/zomato_hyderabad_names.csv"))
+from flask import Flask, request, jsonify
 
-    # Print first few
-    for row in data[:10]:
-        print(row)
+app = Flask(__name__)
+
+@app.route("/scrape", methods=["POST"])
+def scrape_endpoint():
+    payload = request.get_json(force=True)
+    city = payload.get("city", "hyderabad")
+    pages = int(payload.get("pages", 1))
+    headless = bool(payload.get("headless", True))
+    data = scrape_city(city_slug=city, pages=pages, headless=headless)
+    return jsonify(data)
+
+if __name__ == "__main__":
+    # For local testing only
+    app.run(host="0.0.0.0", port=8000)
